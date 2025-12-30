@@ -32,10 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
         'phone' => $_POST['phone'],                       // phone no.
 
         'gender' => $_POST['gender'],                     // gender
-
-        'age' => (int) $_POST['age'],                     // age
-
-        'concern' => $_POST['concern']                    // concern
+        'age' => (int) $_POST['age'],
+        'coupon_code' => $_POST['applied_coupon'] ?? null  // coupon code
     ]
     ;
     $_SESSION['form'] = $form;

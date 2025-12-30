@@ -2,18 +2,21 @@
 <html lang="zxx">
 
 <head>
-    
+
     <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MHXMM7BJ');</script>
-<!-- End Google Tag Manager -->
-    
-    
-    
-    
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-MHXMM7BJ');</script>
+    <!-- End Google Tag Manager -->
+
+
+
+
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -80,13 +83,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </style>
 
 <body>
-    
+
     <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MHXMM7BJ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    
-    
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MHXMM7BJ" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+
     <!-- Preloader Start -->
     <div class="preloader">
         <div class="loading-container">
@@ -96,7 +99,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <!-- Topbar Section Start -->
-  <div class="topbar">
+    <div class="topbar">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 col-md-9">
@@ -118,8 +121,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <!-- Header Social Icons Start -->
                         <div class="topbar-social-icons">
                             <ul>
-                                <li><a href="https://www.instagram.com/ayka.care/"><i class="fa-brands fa-instagram"></i></a></li>
-                                <li><a href="https://www.facebook.com/ayka.care"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                <li><a href="https://www.instagram.com/ayka.care/"><i
+                                            class="fa-brands fa-instagram"></i></a></li>
+                                <li><a href="https://www.facebook.com/ayka.care"><i
+                                            class="fa-brands fa-facebook-f"></i></a></li>
                                 <a href="https://www.youtube.com/@ayka_care"><i class="fab fa-youtube fa-lg"></i></a>
                             </ul>
                         </div>
@@ -159,7 +164,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
                                 </li>
                                 <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
-                                <li class="nav-item"><a class="nav-link" href="https://aykacare.in/#services">Specialists</a></li>
+                                <li class="nav-item"><a class="nav-link"
+                                        href="https://aykacare.in/#services">Specialists</a></li>
                                 <li class="nav-item submenu"><a class="nav-link" href="">Membership Plans</a>
                                     <ul>
                                         <li class="nav-item"><a class="nav-link" href="">Individual Plan</a></li>
@@ -194,19 +200,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="container">
             <h2>About Us</h2>
             <p>
-                At <strong>AYKA Care</strong>, is a digital healthcare and telemedicine platform in India focused on making quality medical services accessible, reliable, and easy to use for everyone. We connect patients with verified doctors, healthcare professionals, and medical service providers through a secure, technology-driven ecosystem.
+                At <strong>AYKA Care</strong>, is a digital healthcare and telemedicine platform in India focused on
+                making quality medical services accessible, reliable, and easy to use for everyone. We connect patients
+                with verified doctors, healthcare professionals, and medical service providers through a secure,
+                technology-driven ecosystem.
 
-Our platform enables online doctor consultations, specialist access, digital health management, and coordinated healthcare services, helping patients receive the right medical care at the right time.
+                Our platform enables online doctor consultations, specialist access, digital health management, and
+                coordinated healthcare services, helping patients receive the right medical care at the right time.
 
-AYKA Care is built to support both patients and healthcare professionals by simplifying consultations, improving visibility for doctors, and creating a seamless experience across online and offline healthcare touchpoints.
+                AYKA Care is built to support both patients and healthcare professionals by simplifying consultations,
+                improving visibility for doctors, and creating a seamless experience across online and offline
+                healthcare touchpoints.
 
             </p>
 
             <h3>Our Vision</h3>
             <p>
-                To build a trusted digital healthcare ecosystem in India that ensures accessible, efficient, and high-quality medical services through technology, innovation, and collaboration.
+                To build a trusted digital healthcare ecosystem in India that ensures accessible, efficient, and
+                high-quality medical services through technology, innovation, and collaboration.
 
-We envision a future where every patient can easily consult the right doctor online and every healthcare professional can grow through digital empowerment.
+                We envision a future where every patient can easily consult the right doctor online and every healthcare
+                professional can grow through digital empowerment.
 
             </p>
 
@@ -214,25 +228,32 @@ We envision a future where every patient can easily consult the right doctor onl
             <ul>
                 <li><strong>Empowering Healthcare Professionals:</strong>
 
-We provide doctors and medical professionals with digital tools, visibility, and operational support to help them manage consultations, engage patients, and grow their practice efficiently.
-</li>
-                <li><strong>Enhancing Patient Care:</strong> We make it easier for patients to find verified doctors, book online consultations, access specialists, and manage their healthcare journey with confidence and transparency.
-</li>
-                <li><strong>Innovation in Digital Healthcare:</strong> We continuously improve our platform using modern healthcare technology to simplify appointment booking, online consultations, follow-ups, and medical coordination.
-</li>
-                <li><strong>Trust, Safety, and Reliability:</strong> We focus on building a trusted network of verified healthcare professionals while maintaining high standards of data security, privacy, and medical reliability.</li>
-            
+                    We provide doctors and medical professionals with digital tools, visibility, and operational support
+                    to help them manage consultations, engage patients, and grow their practice efficiently.
+                </li>
+                <li><strong>Enhancing Patient Care:</strong> We make it easier for patients to find verified doctors,
+                    book online consultations, access specialists, and manage their healthcare journey with confidence
+                    and transparency.
+                </li>
+                <li><strong>Innovation in Digital Healthcare:</strong> We continuously improve our platform using modern
+                    healthcare technology to simplify appointment booking, online consultations, follow-ups, and medical
+                    coordination.
+                </li>
+                <li><strong>Trust, Safety, and Reliability:</strong> We focus on building a trusted network of verified
+                    healthcare professionals while maintaining high standards of data security, privacy, and medical
+                    reliability.</li>
+
             </ul>
-            
-                <h3>Why AYKA Care</h3>
+
+            <h3>Why AYKA Care</h3>
             <ul>
-                <li><strong>Verified doctors and healthcare professionals</strong></li>
-                <li><strong>Online doctor consultation and specialist access</strong></li>
-                <li><strong>Secure digital healthcare platform</strong></li>
-                <li><strong>Patient-centric and doctor-friendly ecosystem</strong></li>
-                <li><strong>Designed for accessibility, affordability, and convenience</strong></li>
-                </ul>
-            
+                <li>Verified doctors and healthcare professionals</li>
+                <li>Online doctor consultation and specialist access</li>
+                <li>Secure digital healthcare platform</li>
+                <li>Patient-centric and doctor-friendly ecosystem</li>
+                <li>Designed for accessibility, affordability, and convenience</li>
+            </ul>
+
         </div>
     </div>
 
@@ -258,9 +279,10 @@ We provide doctors and medical professionals with digital tools, visibility, and
         .footer img {
             object-fit: contain;
         }
-        .newyoutube{
-                    color: #000000;
-                }
+
+        .newyoutube {
+            color: #000000;
+        }
     </style>
 
     <!-- Footer Start -->

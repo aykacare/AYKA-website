@@ -16,10 +16,16 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #8b9d3d 0%, #a8b84a 100%);
+            background: linear-gradient(rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.50)),
+                url('/assets/images/clinic.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
             padding: 40px 0;
         }
+
+
 
         .form-card {
             background: #fff;
@@ -286,12 +292,6 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                                     value="₹ <?php echo $amount; ?>" readonly>
                             </div>
 
-                            <!-- Symptoms Details textarea -->
-                            <div class="col-12">
-                                <label class="form-label">Symptoms Details</label>
-                                <textarea name="symptoms_details" class="form-control" rows="4"
-                                    placeholder="Describe symptoms..." required></textarea>
-                            </div>
 
                             <!-- Patient Name field -->
                             <div class="col-md-6">
@@ -324,13 +324,27 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                                 <input type="number" name="age" class="form-control" placeholder="Age" required>
                             </div>
 
-                            <!-- Concern textarea -->
+                            <!-- Symptoms Details textarea -->
                             <div class="col-12">
-                                <label class="form-label">Concern</label>
-                                <textarea name="concern_details" class="form-control" rows="3"
-                                    placeholder="Explain your concern..." required></textarea>
+                                <label class="form-label">Tell us your Symptoms/Health Concerns</label>
+                                <textarea name="symptoms_details" class="form-control" rows="4"
+                                    placeholder="eg.. I have a fever, cough, etc." required></textarea>
                             </div>
+
                         </div>
+
+                        <!-- <CHANGE> Added promo code field -->
+                        <div class="col-12 mt-3">
+                            <label class="form-label">Promo Code (Optional)</label>
+                            <div class="input-group">
+                                <input type="text" id="couponCode" class="form-control"
+                                    placeholder="Enter code (e.g AYKA100)">
+                                <button class="btn btn-outline-secondary" type="button" id="applyCoupon"
+                                    style="font-size: 13px;">Apply</button>
+                            </div>
+                            <small id="couponMessage" class="mt-1 d-block"></small>
+                        </div>
+                        <input type="hidden" name="applied_coupon" id="appliedCouponInput" value="">
 
                         <!-- Payment section with button and methods -->
                         <div class="payment-section">
@@ -346,6 +360,53 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
             </form>
         </div>
     </div>
+
+    <script>
+
+        document.getElementById('applyCoupon').addEventListener('click', function () {
+            const code = document.getElementById('couponCode').value;
+            const msg = document.getElementById('couponMessage');
+            const baseAmount = <?php echo $amount; ?>;
+
+            if (!code) {
+                msg.innerText = "Please enter a coupon code";
+                msg.style.color = "red";
+                return;
+            }
+
+            fetch('validate-coupon.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'coupon_code=' + encodeURIComponent(code)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const discount = data.discount;
+                        const newTotal = Math.max(baseAmount - discount, 0); // Prevent negative
+
+                        // Update UI with new total
+                        document.getElementById('totalAmount').innerText = newTotal;
+                        document.getElementById('planAmount').value = newTotal; // Hidden field for payment
+                        document.getElementById('amountDisplay').value = "₹ " + newTotal + " (Discount Applied)";
+                        document.getElementById('appliedCouponInput').value = code;
+
+                        msg.style.color = "green";
+                        msg.innerText = "✓ Success! ₹" + discount + " discount applied.";
+                        document.getElementById('applyCoupon').disabled = true;
+                        document.getElementById('couponCode').readOnly = true;
+                    } else {
+                        msg.style.color = "red";
+                        msg.innerText = "✗ " + data.message;
+                    }
+                })
+                .catch(error => {
+                    msg.style.color = "red";
+                    msg.innerText = "Error validating coupon";
+                    console.error(error);
+                });
+        });
+    </script>
 </body>
 
 </html>
