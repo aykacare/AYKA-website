@@ -9,16 +9,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $name = trim($_POST['name'] ?? '');
   $email = trim($_POST['email'] ?? '');
+  $mobile = trim($_POST['mobile'] ?? '');
   $message = trim($_POST['message'] ?? '');
 
   if ($name && $email && $message && filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
     $stmt = $conn->prepare(
-      "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)"
+      "INSERT INTO contact_messages (name, email, mobile, message) VALUES (?, ?, ?, ?)"
     );
 
     if ($stmt) {
-      $stmt->bind_param("sss", $name, $email, $message);
+      $stmt->bind_param("ssss", $name, $email, $mobile, $message);
 
       if ($stmt->execute()) {
         $_SESSION['success'] = "Your message has been sent successfully!";
@@ -279,33 +280,6 @@ if (isset($_SESSION['error'])) {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
-  /* WhatsApp Floating */
-  .whatsapp-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #25D366;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    transition: 0.3s;
-  }
-
-  .whatsapp-float:hover {
-    background: #1eb853;
-    transform: scale(1.05);
-  }
-
-  .whatsapp-float i {
-    font-size: 24px;
-    margin-right: 10px;
-  }
 
   @media(max-width: 900px) {
     .contact-container {
@@ -476,16 +450,13 @@ if (isset($_SESSION['error'])) {
       <form method="POST" action="contact-us.php">
         <input type="text" name="name" placeholder="Your Name" required>
         <input type="email" name="email" placeholder="Your Email" required>
+        <input type="tel" name="mobile" placeholder="Your Mobile No" required>
         <textarea name="message" rows="5" placeholder="Your Comment" required></textarea>
         <button type="submit">Send Message</button>
       </form>
     </div>
   </section>
 
-  <!-- WhatsApp Floating Button -->
-  <a href="https://wa.me/919220782066?text=Hi%20I%20need%20help" target="_blank" class="whatsapp-float">
-    <i class="fab fa-whatsapp"></i> Chat with Us
-  </a>
   <style>
     .footer {
       background: #f9f9f9;
@@ -588,6 +559,12 @@ if (isset($_SESSION['error'])) {
 
   <!-- Main Custom js file -->
   <script src="./assets/js/function.js"></script>
+
+  <!-- Zoho Chatbot -->
+  <script>window.$zoho = window.$zoho || {}; $zoho.salesiq = $zoho.salesiq || { ready: function () { } }</script>
+  <script id="zsiqscript"
+    src="https://salesiq.zohopublic.in/widget?wc=siqb0f830a0885067d021d45d0a48528e2d255c3bf6ab1e64226805d95539ae3b1a"
+    defer></script>
 </body>
 
 </html>

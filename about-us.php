@@ -225,39 +225,50 @@
             </p>
 
             <h3>Our Mission</h3>
-            <ul>
-                <li><strong>Empowering Healthcare Professionals:</strong>
+            <style>
+                .mission-list li::before {
+                    display: none !important;
+                    content: none !important;
+                }
+            </style>
+            <ul class="mission-list" style="list-style: none; padding-left: 0;">
+                <li style="padding-left: 0 !important;"><strong>Empowering Healthcare Professionals:</strong>
 
                     We provide doctors and medical professionals with digital tools, visibility, and operational support
                     to help them manage consultations, engage patients, and grow their practice efficiently.
                 </li>
-                <li><strong>Enhancing Patient Care:</strong> We make it easier for patients to find verified doctors,
+                <li style="padding-left: 0 !important;"><strong>Enhancing Patient Care:</strong> We make it easier for
+                    patients to find verified doctors,
                     book online consultations, access specialists, and manage their healthcare journey with confidence
                     and transparency.
                 </li>
-                <li><strong>Innovation in Digital Healthcare:</strong> We continuously improve our platform using modern
+                <li style="padding-left: 0 !important;"><strong>Innovation in Digital Healthcare:</strong> We
+                    continuously improve our platform using modern
                     healthcare technology to simplify appointment booking, online consultations, follow-ups, and medical
                     coordination.
                 </li>
-                <li><strong>Trust, Safety, and Reliability:</strong> We focus on building a trusted network of verified
+                <li style="padding-left: 0 !important;"><strong>Trust, Safety, and Reliability:</strong> We focus on
+                    building a trusted network of verified
                     healthcare professionals while maintaining high standards of data security, privacy, and medical
                     reliability.</li>
 
             </ul>
 
             <!-- Founder's Message Section Start -->
-            <div class="founder-message" style="padding: 60px 0; background-color: #f9f9f9;">
+            <div class="founder-message" style="padding: 60px 0; background-color: #ffffff;">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-lg-10">
                             <div class="section-title text-center">
-                                <h3 class="wow fadeInUp">Founder’s Message</h3>
+                                <h3 class="wow fadeInUp">Founder's Message</h3>
                             </div>
                             <div class="wow fadeInUp" data-wow-delay="0.2s" style="text-align: justify;">
-                                <p>At AYKA Care, we believe quality healthcare should be accessible, available, and
+                                <p style="margin-bottom: 20px; line-height: 1.8;">At AYKA Care, we believe quality
+                                    healthcare should be accessible, available, and
                                     affordable
                                     for every individual.</p>
-                                <p>AYKA Care was founded with a clear purpose: to simplify healthcare access in India by
+                                <p style="margin-bottom: 20px; line-height: 1.8;">AYKA Care was founded with a clear
+                                    purpose: to simplify healthcare access in India by
                                     connecting patients with trusted doctors, clinics, hospitals, and healthcare
                                     professionals
                                     through a unified digital healthcare platform. Despite medical advancements, many
@@ -267,14 +278,16 @@
                                     managing healthcare services efficiently. At the same time, doctors and clinics
                                     often
                                     struggle with patient outreach, digital visibility, and practice management.</p>
-                                <p>AYKA Care addresses these challenges by offering an integrated healthcare technology
+                                <p style="margin-bottom: 20px; line-height: 1.8;">AYKA Care addresses these challenges
+                                    by offering an integrated healthcare technology
                                     platform
                                     that supports online doctor consultations, offline OPD bookings, specialist
                                     discovery, and
                                     patient care coordination. Our platform is designed to make healthcare services
                                     easily
                                     available while ensuring affordability without compromising medical quality.</p>
-                                <p>For patients, AYKA Care provides seamless access to verified medical professionals,
+                                <p style="margin-bottom: 20px; line-height: 1.8;">For patients, AYKA Care provides
+                                    seamless access to verified medical professionals,
                                     convenient appointment scheduling, and continuity of care across multiple
                                     specialties. For
                                     doctors, clinics, and healthcare partners, we offer digital healthcare solutions
@@ -282,18 +295,27 @@
                                     enhance visibility, patient acquisition, and operational efficiency, enabling them
                                     to focus
                                     on delivering better clinical outcomes.</p>
-                                <p>Our mission is to build a patient-centric healthcare ecosystem that promotes trust,
+                                <p style="margin-bottom: 20px; line-height: 1.8;">Our mission is to build a
+                                    patient-centric healthcare ecosystem that promotes trust,
                                     transparency, and long-term value. Every feature and service at AYKA Care is guided
                                     by real
                                     healthcare needs, ethical practices, and a commitment to improving healthcare
                                     delivery
                                     across urban and semi-urban India.</p>
-                                <p>As we continue to grow, our focus remains on strengthening healthcare access,
+                                <p style="margin-bottom: 20px; line-height: 1.8;">As we continue to grow, our focus
+                                    remains on strengthening healthcare access,
                                     expanding our
                                     medical network, and delivering reliable healthcare solutions that people can depend
                                     on.</p>
-                                <p>Thank you for being part of the AYKA Care journey.</p>
-                                <p class="text-end"><strong>Charchit Sharma</strong><br>Founder & CEO (AYKA Care)</p>
+                                <p style="margin-bottom: 30px; line-height: 1.8;">Thank you for being part of the AYKA
+                                    Care journey.</p>
+                                <div
+                                    style="text-align: right; margin-top: 40px; padding-top: 20px; border-top: 2px solid #c8d439;">
+                                    <p style="margin-bottom: 5px; font-size: 18px; font-weight: 700; color: #2d8659;">
+                                        Charchit Sharmaa</p>
+                                    <p style="margin-bottom: 0; font-size: 14px; color: #666;">Founder & CEO (AYKA Care)
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -34,6 +34,14 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
             overflow: hidden;
             max-width: 900px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        .back-button-top {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
         }
 
         .form-card .row {
@@ -238,13 +246,19 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
 <body>
     <div class="container">
         <div class="form-card">
+            <div class="back-button-top">
+                <a href="index.php#services" class="btn btn-outline-secondary"
+                    style="text-decoration: none; color: #333; border-color: #c8d439; padding: 6px 15px; border-radius: 5px; font-size: 13px;">
+                    Back
+                </a>
+            </div>
             <form method="POST" action="index.php">
                 <div class="row g-0">
                     <!-- Left side with plan details, contact info, and terms -->
                     <div class="col-lg-5 left-section">
                         <div class="logo-section">
                             <img src="./assets/images/logo.svg" alt="AYKA Care Logo">
-                            <h5>AYKA CARE</h5>
+
                         </div>
 
                         <h4>Teleconsultation</h4>
@@ -341,6 +355,8 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                                     placeholder="Enter code (e.g AYKA100)">
                                 <button class="btn btn-outline-secondary" type="button" id="applyCoupon"
                                     style="font-size: 13px;">Apply</button>
+                                <button class="btn btn-outline-danger" type="button" id="removeCoupon"
+                                    style="font-size: 13px; display: none;">Remove</button>
                             </div>
                             <small id="couponMessage" class="mt-1 d-block"></small>
                         </div>
@@ -382,7 +398,15 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const discount = data.discount;
+
+                        let discount = 0;
+                        if (data.isPercentage) {
+
+                            discount = Math.round((baseAmount * data.discount) / 100);
+                        } else {
+                            discount = data.discount;
+                        }
+
                         const newTotal = Math.max(baseAmount - discount, 0); // Prevent negative
 
                         // Update UI with new total
@@ -395,6 +419,7 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                         msg.innerText = "✓ Success! ₹" + discount + " discount applied.";
                         document.getElementById('applyCoupon').disabled = true;
                         document.getElementById('couponCode').readOnly = true;
+                        document.getElementById('removeCoupon').style.display = 'inline-block';
                     } else {
                         msg.style.color = "red";
                         msg.innerText = "✗ " + data.message;
@@ -405,6 +430,23 @@ $amount = isset($_GET['amount']) ? htmlspecialchars($_GET['amount']) : '599';
                     msg.innerText = "Error validating coupon";
                     console.error(error);
                 });
+        });
+
+        // Remove coupon functionality
+        document.getElementById('removeCoupon').addEventListener('click', function () {
+            const baseAmount = <?php echo $amount; ?>;
+            const msg = document.getElementById('couponMessage');
+
+            // Reset to original amount
+            document.getElementById('totalAmount').innerText = baseAmount;
+            document.getElementById('planAmount').value = baseAmount;
+            document.getElementById('amountDisplay').value = "₹ " + baseAmount;
+            document.getElementById('appliedCouponInput').value = "";
+            document.getElementById('couponCode').value = "";
+            document.getElementById('couponCode').readOnly = false;
+            document.getElementById('applyCoupon').disabled = false;
+            document.getElementById('removeCoupon').style.display = 'none';
+            msg.innerText = "";
         });
     </script>
 </body>

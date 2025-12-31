@@ -11,7 +11,15 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($row = $result->fetch_assoc()) {
-    echo json_encode(['success' => true, 'discount' => (int) $row['value']]);
+    $value = $row['value'];
+
+    $discount = (float) str_replace('%', '', $value);
+
+    echo json_encode([
+        'success' => true,
+        'discount' => $discount,
+        'isPercentage' => true
+    ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid or expired coupon code']);
 }

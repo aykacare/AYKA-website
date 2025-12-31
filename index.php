@@ -22,21 +22,63 @@ if ($conn->connect_error) {
 
 // Handle form submission to create Razorpay order
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_POST['razorpay_payment_id'])) {
+    // Create consultation_requests table if it doesn't exist (for consultation forms)
+    if (isset($_POST['name']) && $_POST['name'] === 'consultation_request') {
+        $createTable = "CREATE TABLE IF NOT EXISTS consultation_requests (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            patient_name VARCHAR(255) NOT NULL,
+            phone VARCHAR(255) NOT NULL,
+            gender VARCHAR(50) NOT NULL,
+            age INT NOT NULL,
+            symptoms_details LONGTEXT NOT NULL,
+            specialization VARCHAR(255) NOT NULL,
+            amount DECIMAL(10,2) NOT NULL,
+            coupon_code VARCHAR(255) DEFAULT NULL,
+            payment_id VARCHAR(255) DEFAULT NULL,
+            order_id VARCHAR(255) DEFAULT NULL,
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )";
+        $conn->query($createTable);
+    }
+
     $form = [
-        'payment_details' => $_POST['payment_details'],   // Payment details
+        'payment_details' => $_POST['payment_details'] ?? '',   // Payment details
         'amount' => (int) $_POST['amount'],               // amount
-
-        'symptoms_details' => $_POST['symptoms_details'], // symptoms details
-
-        'patient_name' => $_POST['patient_name'],         // patient name
-        'phone' => $_POST['phone'],                       // phone no.
-
-        'gender' => $_POST['gender'],                     // gender
-        'age' => (int) $_POST['age'],
-        'coupon_code' => $_POST['applied_coupon'] ?? null  // coupon code
-    ]
-    ;
+        'symptoms_details' => $_POST['symptoms_details'] ?? '', // symptoms details
+        'patient_name' => $_POST['patient_name'] ?? '',         // patient name
+        'phone' => $_POST['phone'] ?? '',                       // phone no.
+        'gender' => $_POST['gender'] ?? '',                     // gender
+        'age' => (int) ($_POST['age'] ?? 0),
+        'coupon_code' => $_POST['applied_coupon'] ?? null,  // coupon code
+        'name' => $_POST['name'] ?? '',
+        'concern' => $_POST['concern'] ?? ''
+    ];
     $_SESSION['form'] = $form;
+
+    // Save consultation request immediately (before payment) so we have a record even if payment is cancelled
+    if (isset($_POST['name']) && $_POST['name'] === 'consultation_request') {
+        // Insert consultation request with 'pending' status
+        $stmt = $conn->prepare("INSERT INTO consultation_requests (patient_name, phone, gender, age, symptoms_details, specialization, amount, coupon_code, status) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+        $stmt->bind_param(
+            "sssissss",
+            $form['patient_name'],
+            $form['phone'],
+            $form['gender'],
+            $form['age'],
+            $form['symptoms_details'],
+            $form['concern'],
+            $form['amount'],
+            $form['coupon_code']
+        );
+        $stmt->execute();
+        $consultation_id = $stmt->insert_id;
+        $stmt->close();
+
+        // Store consultation ID in session to update it later after payment
+        $_SESSION['consultation_id'] = $consultation_id;
+    }
 
     // Testing: force Rs. 1, real: $form['TotalPaybleAmount'] * 100;
     $amountInPaise = 1 * 100;
@@ -49,11 +91,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
     ]);
 
     $orderId = $order['id'];
-    $name = htmlspecialchars($form['f_name'] . ' ' . $form['l_name']);
-    $email = htmlspecialchars($form['email']);
-    $phone = htmlspecialchars($form['phone']);
-    $planName = htmlspecialchars($form['plan_name']);
-    $duration = htmlspecialchars($form['duration']);
+
+    // Handle both consultation and subscription forms
+    if (isset($form['name']) && $form['name'] === 'consultation_request') {
+        $name = htmlspecialchars($form['patient_name']);
+        $email = '';
+        $phone = htmlspecialchars($form['phone']);
+        $planName = htmlspecialchars($form['concern'] ?? 'Teleconsultation');
+        $duration = '';
+    } else {
+        $name = htmlspecialchars($form['f_name'] . ' ' . $form['l_name']);
+        $email = htmlspecialchars($form['email']);
+        $phone = htmlspecialchars($form['phone']);
+        $planName = htmlspecialchars($form['plan_name']);
+        $duration = htmlspecialchars($form['duration']);
+    }
 
     // Razorpay Checkout (JS)
     echo "
@@ -122,39 +174,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
         $api->utility->verifyPaymentSignature($attributes);
 
         if ($form) {
-            // Insert into users table
-            $stmt = $conn->prepare("INSERT INTO users (f_name, l_name, email, phone, gender, dob, city) 
-                                    VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param(
-                "sssssss",
-                $form['f_name'],
-                $form['l_name'],
-                $form['email'],
-                $form['phone'],
-                $form['gender'],
-                $form['dob'],
-                $form['city']
-            );
-            $stmt->execute();
-            $patient_id = $stmt->insert_id;
-            $stmt->close();
+            // Check if this is a consultation request
+            if (isset($form['name']) && $form['name'] === 'consultation_request') {
+                // Update existing consultation request with payment details
+                if (isset($_SESSION['consultation_id'])) {
+                    $consultation_id = $_SESSION['consultation_id'];
+                    $stmt = $conn->prepare("UPDATE consultation_requests SET payment_id = ?, order_id = ?, status = 'completed' WHERE id = ?");
+                    $stmt->bind_param("ssi", $_POST['razorpay_payment_id'], $_POST['razorpay_order_id'], $consultation_id);
+                    $stmt->execute();
+                    $stmt->close();
+                    unset($_SESSION['consultation_id']);
+                } else {
+                    // Fallback: if consultation_id not in session, insert new record
+                    $createTable = "CREATE TABLE IF NOT EXISTS consultation_requests (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        patient_name VARCHAR(255) NOT NULL,
+                        phone VARCHAR(255) NOT NULL,
+                        gender VARCHAR(50) NOT NULL,
+                        age INT NOT NULL,
+                        symptoms_details LONGTEXT NOT NULL,
+                        specialization VARCHAR(255) NOT NULL,
+                        amount DECIMAL(10,2) NOT NULL,
+                        coupon_code VARCHAR(255) DEFAULT NULL,
+                        payment_id VARCHAR(255) DEFAULT NULL,
+                        order_id VARCHAR(255) DEFAULT NULL,
+                        status VARCHAR(50) DEFAULT 'completed',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )";
+                    $conn->query($createTable);
 
-            // Insert into subscriptions table
-            $stmt = $conn->prepare("INSERT INTO subscriptions (patient_id, order_id, payment_id, plan_name, members, amount, startdate, expirydate, status) 
-                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'success')");
-            $stmt->bind_param(
-                "isssisss",
-                $patient_id,
-                $_POST['razorpay_order_id'],
-                $_POST['razorpay_payment_id'],
-                $form['plan_name'],
-                $form['members'],
-                $form['amount'],
-                $form['startdate'],
-                $form['enddate']
-            );
-            $stmt->execute();
-            $stmt->close();
+                    $stmt = $conn->prepare("INSERT INTO consultation_requests (patient_name, phone, gender, age, symptoms_details, specialization, amount, coupon_code, payment_id, order_id, status) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed')");
+                    $stmt->bind_param(
+                        "sssissssss",
+                        $form['patient_name'],
+                        $form['phone'],
+                        $form['gender'],
+                        $form['age'],
+                        $form['symptoms_details'],
+                        $form['concern'],
+                        $form['amount'],
+                        $form['coupon_code'],
+                        $_POST['razorpay_payment_id'],
+                        $_POST['razorpay_order_id']
+                    );
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            } else {
+                // Insert into users table
+                $stmt = $conn->prepare("INSERT INTO users (f_name, l_name, email, phone, gender, dob, city) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param(
+                    "sssssss",
+                    $form['f_name'],
+                    $form['l_name'],
+                    $form['email'],
+                    $form['phone'],
+                    $form['gender'],
+                    $form['dob'],
+                    $form['city']
+                );
+                $stmt->execute();
+                $patient_id = $stmt->insert_id;
+                $stmt->close();
+
+                // Insert into subscriptions table
+                $stmt = $conn->prepare("INSERT INTO subscriptions (patient_id, order_id, payment_id, plan_name, members, amount, startdate, expirydate, status) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'success')");
+                $stmt->bind_param(
+                    "isssisss",
+                    $patient_id,
+                    $_POST['razorpay_order_id'],
+                    $_POST['razorpay_payment_id'],
+                    $form['plan_name'],
+                    $form['members'],
+                    $form['amount'],
+                    $form['startdate'],
+                    $form['enddate']
+                );
+                $stmt->execute();
+                $stmt->close();
+            }
 
             unset($_SESSION['form']);
 
@@ -312,12 +413,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
         </div>
     </div>
     <!-- Preloader End -->
-    <?php if (isset($_GET['status'])): ?>
-        <?php if ($_GET['status'] === 'success'): ?>
-            <div class="alert alert-success text-center">✅ Payment Successful!</div>
-        <?php elseif ($_GET['status'] === 'cancel'): ?>
-            <div class="alert alert-warning text-center">⚠️ Payment Cancelled.</div>
-        <?php endif; ?>
+    <?php
+    // Handle status messages - store in session to persist
+    if (isset($_GET['status'])) {
+        $_SESSION['payment_status'] = $_GET['status'];
+        $_SESSION['payment_status_time'] = time();
+    }
+
+    // Show alert if status exists in session or GET (show for 10 seconds)
+    $status = null;
+    if (isset($_SESSION['payment_status'])) {
+        $statusTime = $_SESSION['payment_status_time'] ?? 0;
+        // Show for 10 seconds
+        if ((time() - $statusTime) < 10) {
+            $status = $_SESSION['payment_status'];
+        } else {
+            unset($_SESSION['payment_status']);
+            unset($_SESSION['payment_status_time']);
+        }
+    } else if (isset($_GET['status'])) {
+        $status = $_GET['status'];
+    }
+
+    if ($status): ?>
+        <div class="alert alert-<?php echo $status === 'success' ? 'success' : 'warning'; ?> text-center payment-alert"
+            style="position: fixed; top: 60px; left: 0; right: 0; z-index: 10000; padding: 15px; margin: 0; border-radius: 0; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <?php if ($status === 'success'): ?>
+                ✅ Payment Successful!
+            <?php elseif ($status === 'cancel'): ?>
+                ⚠️ Payment Cancelled.
+            <?php elseif ($status === 'error'): ?>
+                ⚠️ Payment Failed. Please try again.
+            <?php endif; ?>
+            <button type="button" class="close-alert" onclick="this.parentElement.remove(); updateBodyPadding();"
+                style="float: right; background: none; border: none; font-size: 24px; cursor: pointer; margin-left: 15px; line-height: 1; opacity: 0.7;">&times;</button>
+        </div>
+        <style>
+            .payment-alert {
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .close-alert:hover {
+                opacity: 1 !important;
+            }
+
+            /* Add padding to body when alert is shown to push content down */
+            body.has-payment-alert {
+                padding-top: 120px !important;
+            }
+        </style>
+        <script>
+            // Add class to body when alert is shown
+            document.body.classList.add('has-payment-alert');
+
+            function updateBodyPadding() {
+                var alert = document.querySelector('.payment-alert');
+                if (!alert) {
+                    document.body.classList.remove('has-payment-alert');
+                }
+            }
+
+            // Auto-dismiss after 8 seconds
+            setTimeout(function () {
+                var alert = document.querySelector('.payment-alert');
+                if (alert) {
+                    alert.style.transition = 'opacity 0.5s, transform 0.5s';
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-100%)';
+                    setTimeout(function () {
+                        alert.remove();
+                        updateBodyPadding();
+                    }, 500);
+                }
+            }, 8000);
+        </script>
     <?php endif; ?>
 
     <!-- Topbar Section Start -->
@@ -655,9 +836,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
     <!-- About Us Section End -->
 
     <!-- Our Service Section Start -->
-    <div class="our-services bg-section" id="services">
+    <div class="our-service">
         <div class="container">
-            <div class="row section-row align-items-center" style=" margin-bottom: 0px;">
+            <div class="row section-row align-items-center" style="margin-bottom: 0px;">
                 <div class="col-lg-12">
                     <!-- Section Title Start -->
                     <div class="section-title">
@@ -670,64 +851,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
 
             <div class="row align-items-center">
                 <style>
-                    .row {
-                        margin-right: 0px;
-                        margin-left: 0px;
-                    }
-
+                    /* Enlarged specialist icons to 100px and made button a compact text link */
                     .specialist-card {
                         border: 1px solid #dceae4;
                         border-radius: 12px;
-                        padding: 25px;
-                        text-align: center;
-                        transition: all 0.3s ease;
-                        background-color: #fff;
-                    }
-
-                    .specialist-card:hover {
-                        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-                        transform: translateY(-5px);
-                        border-color: #aad1bf;
-                    }
-
-                    .specialist-card img {
-                        width: 61px;
-                        height: 61px;
-                        margin-bottom: 15px;
-                        transition: transform 0.3s ease, filter 0.3s ease;
-                    }
-
-                    .specialist-card:hover img {
-                        filter: none;
-                        transform: scale(1.1);
-                    }
-
-                    .specialist-title {
-                        font-size: 1rem;
-                        font-weight: 600;
-                        color: #2a4638;
-                    }
-
-                    .section-heading {
-                        color: #1e3a34;
-                    }
-
-                    .section-subtitle {
-                        color: #65766d;
-                    }
-
-                    .text-size {
-                        font-size: 10px
-                    }
-
-                    .specialist-card {
-                        border: 1px solid #dceae4;
-                        border-radius: 12px;
-                        width: 100%;
-                        /* full width on larger screens */
-                        min-height: 150px;
-                        /* height grows based on content */
-                        padding: 10px;
+                        padding: 10px 8px;
                         text-align: center;
                         transition: all 0.3s ease;
                         background-color: #fff;
@@ -737,19 +865,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         align-items: center;
                         overflow: hidden;
                         word-wrap: break-word;
+                        min-height: 240px;
                     }
 
+                    .specialist-card:hover {
+                        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+                        transform: translateY(-5px);
+                        border-color: #aad1bf;
+                    }
+
+                    /* Enlarged icon from 50px to 100px */
                     .specialist-card img {
-                        width: 50px;
-                        height: 50px;
-                        margin-bottom: 8px;
+                        width: 60px;
+                        height: 60px;
                         object-fit: contain;
                         transition: transform 0.3s ease;
+                        margin-bottom: 8px;
                     }
 
+                    .specialist-card:hover img {
+                        transform: scale(1.1);
+                    }
 
                     .specialist-title {
-                        font-size: 0.9rem;
+                        font-size: 0.95rem;
                         font-weight: 600;
                         color: #2a4638;
                         overflow-wrap: break-word;
@@ -757,60 +896,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         overflow: hidden;
                         text-overflow: ellipsis;
                         display: -webkit-box;
-                        -webkit-line-clamp: 3;
-                        /* maximum 3 lines */
-                        -webkit-box-orient: vertical;
-                    }
-
-                    .specialist-title {
-                        font-size: 0.8rem;
                         -webkit-line-clamp: 2;
-                        /* maximum 2 lines on mobile */
+                        -webkit-box-orient: vertical;
+
+                        flex-grow: 0.2;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                     }
 
-                    /* Mobile: 2 columns */
-                    @media (max-width: 576px) {
+                    /* Changed button to compact text link style instead of full-width button */
+                    .consult-btn {
+                        background: none;
+                        border: none;
+                        color: #c8d439;
+                        font-weight: 700;
+                        font-size: 0.85rem;
+                        text-transform: uppercase;
+                        cursor: pointer;
+                        text-decoration: none;
+                        transition: all 0.3s ease;
+                        display: inline-block;
+                        letter-spacing: 0.5px;
+                        margin-top: 5px;
+                        padding: 0;
+                    }
 
-                        /* Responsive grid */
+                    .consult-btn:hover {
+                        color: #a8ba2a;
+                        text-decoration: underline;
+                    }
+
+                    @media (max-width: 576px) {
                         #services {
                             display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                            grid-template-columns: repeat(2, 1fr);
                             gap: 15px;
                             justify-content: center;
                         }
 
                         .specialist-card {
-                            width: 150px;
-                            height: 150px;
-                            /* fixed height on mobile */
+                            min-height: 200px;
+                            padding: 8px 6px;
                         }
 
-                        #services {
-                            grid-template-columns: repeat(2, 1fr);
-                            gap: 10px;
-                        }
-
+                        /* Slightly smaller icons on mobile */
                         .specialist-card img {
-                            width: 40px;
-                            height: 40px;
-                            margin-bottom: 6px;
+                            width: 60px;
+                            height: 60px;
+                            margin-bottom: 8px;
                         }
 
                         .specialist-title {
-                            font-size: 0.8rem;
+                            font-size: 0.85rem;
                             -webkit-line-clamp: 2;
-                            /* maximum 2 lines on mobile */
+                        }
+
+                        .consult-btn {
+                            font-size: 0.8rem;
                         }
                     }
                 </style>
+
                 <div class="row g-4" id="services">
 
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/GeneralPhysician.webp" alt="General Physician">
-                            <div class="specialist-title mb-3">General Physician</div>
-                            <a href="consultation-form.php?specialist=General Physician" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">General Physician</div>
+                            <a href="consultation-form.php?specialist=General Physician&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -819,9 +973,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Gynecology.webp" alt="Gynecology">
-                            <div class="specialist-title mb-3">Gynecology</div>
-                            <a href="consultation-form.php?specialist=Gynecology" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Gynecology</div>
+                            <a href="consultation-form.php?specialist=Gynecology&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -830,9 +983,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Psychiatry.webp" alt="Psychiatry">
-                            <div class="specialist-title mb-3">Psychiatry</div>
-                            <a href="consultation-form.php?specialist=Psychiatry" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Psychiatry</div>
+                            <a href="consultation-form.php?specialist=Psychiatry&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -841,9 +993,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Pediatrics.webp" alt="Pediatrics">
-                            <div class="specialist-title mb-3">Pediatrics</div>
-                            <a href="consultation-form.php?specialist=Pediatrics" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Pediatrics</div>
+                            <a href="consultation-form.php?specialist=Pediatrics&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -852,9 +1003,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/ENT (Ear, Nose, Throat).webp" alt="ENT">
-                            <div class="specialist-title mb-3">ENT (Ear, Nose, Throat)</div>
-                            <a href="consultation-form.php?specialist=ENT" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">ENT (Ear, Nose, Throat)</div>
+                            <a href="consultation-form.php?specialist=ENT&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -863,9 +1013,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Orthopedics.webp" alt="Orthopedics">
-                            <div class="specialist-title mb-3">Orthopedics</div>
-                            <a href="consultation-form.php?specialist=Orthopedics" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Orthopedics</div>
+                            <a href="consultation-form.php?specialist=Orthopedics&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -874,9 +1023,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Cardiology.webp" alt="Cardiology">
-                            <div class="specialist-title mb-3">Cardiology</div>
-                            <a href="consultation-form.php?specialist=Cardiology" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Cardiology</div>
+                            <a href="consultation-form.php?specialist=Cardiology&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -885,9 +1033,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-6811cf0387c7c.webp" alt="Home Health Aid">
-                            <div class="specialist-title mb-3">Home Health Aid</div>
-                            <a href="consultation-form.php?specialist=Home Health Aid" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Home Health Aid</div>
+                            <a href="consultation-form.php?specialist=Home Health Aid&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -896,9 +1043,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/Nutrition and Dietetics.webp" alt="Nutrition">
-                            <div class="specialist-title mb-3">Nutrition and Dietetics</div>
-                            <a href="consultation-form.php?specialist=Nutrition and Dietetics" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Nutrition and Dietetics</div>
+                            <a href="consultation-form.php?specialist=Nutrition and Dietetics&amount=599"
+                                class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -907,9 +1054,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-6811cf9c7e714.webp" alt="Endocrinologist">
-                            <div class="specialist-title mb-3">Endocrinologist</div>
-                            <a href="consultation-form.php?specialist=Endocrinologist" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Endocrinologist</div>
+                            <a href="consultation-form.php?specialist=Endocrinologist&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -918,9 +1064,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-68122781158b3.webp" alt="Neurologist">
-                            <div class="specialist-title mb-3">Neurologist</div>
-                            <a href="consultation-form.php?specialist=Neurologist" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Neurologist</div>
+                            <a href="consultation-form.php?specialist=Neurologist&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -929,9 +1074,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-68122704cc35f.webp" alt="BAMS">
-                            <div class="specialist-title mb-3">BAMS Doctor (Ayurvedic Practitioner)</div>
-                            <a href="consultation-form.php?specialist=BAMS Doctor" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">BAMS Doctor (Ayurvedic Practitioner)</div>
+                            <a href="consultation-form.php?specialist=BAMS Doctor&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -940,9 +1084,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-6811d01a50be5.webp" alt="Dentistry">
-                            <div class="specialist-title mb-3">Dentistry</div>
-                            <a href="consultation-form.php?specialist=Dentistry" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Dentistry</div>
+                            <a href="consultation-form.php?specialist=Dentistry&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -951,9 +1094,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/2025-04-30-6811d0f4eaa51.webp" alt="BHMS">
-                            <div class="specialist-title text-size mb-3">BHMS (Homeopathic Medicine and Surgery)</div>
-                            <a href="consultation-form.php?specialist=BHMS" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">BHMS (Homeopathic Medicine)</div>
+                            <a href="consultation-form.php?specialist=BHMS&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -962,9 +1104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/GeneralPhysician.webp" alt="BNYS">
-                            <div class="specialist-title text-size mb-3">BNYS (Naturopathy & Yogic Science)</div>
-                            <a href="consultation-form.php?specialist=BNYS" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">BNYS (Naturopathy & Yogic Science)</div>
+                            <a href="consultation-form.php?specialist=BNYS&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
@@ -973,19 +1114,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     <div class="col-6 col-sm-4 col-md-3">
                         <div class="specialist-card h-100">
                             <img src="./assets/images/service-icon/GeneralPhysician.webp" alt="Physiotherapist">
-                            <div class="specialist-title mb-3">Physiotherapist</div>
-                            <a href="consultation-form.php?specialist=Physiotherapist" class="btn btn-sm w-100"
-                                style="background:#c8d439; color:#ffffff; border-radius: 5px; font-weight: 600;">
+                            <div class="specialist-title">Physiotherapist</div>
+                            <a href="consultation-form.php?specialist=Physiotherapist&amount=599" class="consult-btn">
                                 Consult Now
                             </a>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>
     <!-- Our Service Section End -->
+
     <br><br>
     <!-- Intro Video Section Start -->
     <div class="intro-video">
@@ -1506,6 +1647,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             </div>
             <!-- Right Button -->
             <button class="nav-btn next">&#8594;</button>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0 20px 0;">
+            <a href="consultation-form.php?specialist=General Physician&amount=599" class="btn-default"
+                style="display: inline-block; text-decoration: none;">
+                Consult Now
+            </a>
         </div>
     </section>
 
@@ -2492,10 +2640,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
         });
     </script>
 
-    <script>window.$zoho = window.$zoho || {}; $zoho.salesiq = $zoho.salesiq || { ready: function () { } }</script>
-    <script id="zsiqscript"
-        src="https://salesiq.zohopublic.in/widget?wc=siqb0f830a0885067d021d45d0a48528e2d255c3bf6ab1e64226805d95539ae3b1a"
-        defer></script>
 
 </body>
 
