@@ -413,8 +413,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                                     </ul>
                                 </li>
 
-                                <li class="nav-item"><a class="nav-link"
-                                        href="https://expert.aykacare.in/?fluent-form=4">Contact Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="./contact-us.php">Contact Us</a></li>
                                 <li class="nav-item highlighted-menu"><a class="nav-link"
                                         href="https://expert.aykacare.in/?fluent-form=4">book appointment</a></li>
                             </ul>
@@ -2183,7 +2182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         <!--<li><a href="#">Homecare</a></li>-->
                         <li><a href="#">Specialist</a></li>
                         <li><a href="https://expert.aykacare.in/">Join AYKA Care</a></li>
-                        <li><a href="https://expert.aykacare.in/?fluent-form=4">Contact Us</a></li>
+                        <li><a href="./contact-us.php">Contact Us</a></li>
                     </ul>
                 </div>
 

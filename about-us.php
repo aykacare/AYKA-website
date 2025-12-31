@@ -245,14 +245,61 @@
 
             </ul>
 
-            <h3>Why AYKA Care</h3>
-            <ul>
-                <li>Verified doctors and healthcare professionals</li>
-                <li>Online doctor consultation and specialist access</li>
-                <li>Secure digital healthcare platform</li>
-                <li>Patient-centric and doctor-friendly ecosystem</li>
-                <li>Designed for accessibility, affordability, and convenience</li>
-            </ul>
+            <!-- Founder's Message Section Start -->
+            <div class="founder-message" style="padding: 60px 0; background-color: #f9f9f9;">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="section-title text-center">
+                                <h3 class="wow fadeInUp">Founder’s Message</h3>
+                            </div>
+                            <div class="wow fadeInUp" data-wow-delay="0.2s" style="text-align: justify;">
+                                <p>At AYKA Care, we believe quality healthcare should be accessible, available, and
+                                    affordable
+                                    for every individual.</p>
+                                <p>AYKA Care was founded with a clear purpose: to simplify healthcare access in India by
+                                    connecting patients with trusted doctors, clinics, hospitals, and healthcare
+                                    professionals
+                                    through a unified digital healthcare platform. Despite medical advancements, many
+                                    patients
+                                    still face difficulties in finding the right specialist, booking timely
+                                    appointments, and
+                                    managing healthcare services efficiently. At the same time, doctors and clinics
+                                    often
+                                    struggle with patient outreach, digital visibility, and practice management.</p>
+                                <p>AYKA Care addresses these challenges by offering an integrated healthcare technology
+                                    platform
+                                    that supports online doctor consultations, offline OPD bookings, specialist
+                                    discovery, and
+                                    patient care coordination. Our platform is designed to make healthcare services
+                                    easily
+                                    available while ensuring affordability without compromising medical quality.</p>
+                                <p>For patients, AYKA Care provides seamless access to verified medical professionals,
+                                    convenient appointment scheduling, and continuity of care across multiple
+                                    specialties. For
+                                    doctors, clinics, and healthcare partners, we offer digital healthcare solutions
+                                    that
+                                    enhance visibility, patient acquisition, and operational efficiency, enabling them
+                                    to focus
+                                    on delivering better clinical outcomes.</p>
+                                <p>Our mission is to build a patient-centric healthcare ecosystem that promotes trust,
+                                    transparency, and long-term value. Every feature and service at AYKA Care is guided
+                                    by real
+                                    healthcare needs, ethical practices, and a commitment to improving healthcare
+                                    delivery
+                                    across urban and semi-urban India.</p>
+                                <p>As we continue to grow, our focus remains on strengthening healthcare access,
+                                    expanding our
+                                    medical network, and delivering reliable healthcare solutions that people can depend
+                                    on.</p>
+                                <p>Thank you for being part of the AYKA Care journey.</p>
+                                <p class="text-end"><strong>Charchit Sharma</strong><br>Founder & CEO (AYKA Care)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Founder's Message Section End -->
 
         </div>
     </div>
