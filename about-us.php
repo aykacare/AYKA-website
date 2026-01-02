@@ -257,20 +257,12 @@
             <!-- Founder's Message Section Start -->
             <div class="founder-message" style="padding: 60px 0; background-color: #ffffff;">
                 <div class="container">
-                    <div class="row align-items-center">
-
-                        <div class="col-lg-4 col-md-5 mb-4 mb-md-0">
-                            <div class="founder-image wow fadeInLeft" style="text-align: center;">
-                                <img src="./assets/images/mobile-view.webp" alt="Founder"
-                                    style="max-width: 300px; width: 100%; height: auto; border-radius: 20px;">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="section-title text-center">
+                                <h3 class="wow fadeInUp">Founder's Message</h3>
                             </div>
-                        </div>
-
-                        <div class="col-lg-8 col-md-7">
-                            <div class="section-title" style="text-align: left; margin-bottom: 30px;">
-                                <h3 class="wow fadeInUp" style="color: #4d793c;">Founder's Message</h3>
-                            </div>
-                            <div class="wow fadeInUp" data-wow-delay="0.2s" style="text-align: left;">
+                            <div class="wow fadeInUp" data-wow-delay="0.2s" style="text-align: justify;">
                                 <p style="margin-bottom: 20px; line-height: 1.8;">At AYKA Care, we believe quality
                                     healthcare should be accessible, available, and
                                     affordable
@@ -318,8 +310,8 @@
                                 <p style="margin-bottom: 30px; line-height: 1.8;">Thank you for being part of the AYKA
                                     Care journey.</p>
                                 <div
-                                    style="text-align: left; margin-top: 40px; padding-top: 20px; border-top: 2px solid #b8c23a;">
-                                    <p style="margin-bottom: 5px; font-size: 18px; font-weight: 700; color: #4d793c;">
+                                    style="text-align: right; margin-top: 40px; padding-top: 20px; border-top: 2px solid #c8d439;">
+                                    <p style="margin-bottom: 5px; font-size: 18px; font-weight: 700; color: #2d8659;">
                                         Charchit Sharmaa</p>
                                     <p style="margin-bottom: 0; font-size: 14px; color: #666;">Founder & CEO (AYKA Care)
                                     </p>
