@@ -6939,5 +6939,20 @@ html {
   text-decoration: none;
 }
 
+.work-step-titals h3 {
+    margin: none;
+}
+
+
+.work-step-titals
+{
+ margin-top: 60px;
+ /* margin-bottom: 10px; */
+}
+
+.work-s-step3 work-step-icon
+{
+	margin-top: 20px;
+}
 
 
