@@ -6879,3 +6879,12 @@ header.main-header .header-sticky.active{
 	}
 	
 }
+
+.slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* key line */
+  align-items: center;
+  height: 220px; /* adjust if needed */
+  text-align: center;
+}
