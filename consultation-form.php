@@ -1,4 +1,6 @@
 <?php
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 session_start();
 require 'db.php';
 
@@ -94,7 +96,7 @@ $conn->close();
     <style>
         body {
             background: linear-gradient(rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.50)),
-                url('/assets/images/clinic.jpeg');
+                url('../assets/images/clinic.jpeg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
