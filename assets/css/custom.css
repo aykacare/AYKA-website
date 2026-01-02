@@ -5121,7 +5121,7 @@ header.main-header .header-sticky.active{
 
   #services{
     display: block !important;
-	margin-left: 70px !important;
+	margin-left: 80px !important;
   }
 }
 
@@ -6885,6 +6885,9 @@ header.main-header .header-sticky.active{
   flex-direction: column;
   justify-content: space-between; /* key line */
   align-items: center;
-  height: 220px; /* adjust if needed */
+  height: 190px; /* adjust if needed */
   text-align: center;
 }
+
+
+
