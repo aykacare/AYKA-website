@@ -1968,11 +1968,11 @@ header.main-header .header-sticky.active{
 
 .we-work{
 	/* background-image: url('../images/section-bg-img-2.png'); */
-	background-image: url('../assets/images/mobile-view.jpg') !important;
+	background-image: url('../images/mobile-view.webp');
 
 	background-repeat: no-repeat;
 	background-position: left bottom;
-	background-size: auto;
+	background-size: 250px 450px;
 	padding: 100px 0;
 }
 
