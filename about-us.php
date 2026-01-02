@@ -80,6 +80,11 @@
             }
         }
     }
+  
+    .container {
+        max-width: 100%;
+    }
+    
 </style>
 
 <body>
@@ -196,7 +201,7 @@
     </header>
     <!-- Header End -->
 
-    <div class="about-section">
+    <div class="about-section" style="width:100%">
         <div class="container">
             <h2>About Us</h2>
             <p>

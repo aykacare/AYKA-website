@@ -1967,7 +1967,9 @@ header.main-header .header-sticky.active{
 /************************************/
 
 .we-work{
-	background-image: url('../images/section-bg-img-2.png');
+	/* background-image: url('../images/section-bg-img-2.png'); */
+	background-image: url('../assets/images/mobile-view.jpg') !important;
+
 	background-repeat: no-repeat;
 	background-position: left bottom;
 	background-size: auto;
@@ -6947,12 +6949,137 @@ html {
 .work-step-titals
 {
  margin-top: 60px;
- /* margin-bottom: 10px; */
+ margin-bottom: 10px;
 }
 
-.work-s-step3 work-step-icon
+
+
+
+
+
+
+
+
+
+
+
+/* Main container for the 4 steps */
+.work-steps-box {
+    display: flex;
+    justify-content: center;     /* Centers the entire group horizontally */
+    align-items: flex-start;     /* Aligns all steps to the top */
+    gap: 40px;                   /* Consistent space between steps - adjust if needed (30px-60px) */
+    flex-wrap: wrap;             /* Responsive: wraps on smaller screens */
+    padding: 50px 20px;          /* Vertical padding for breathing room */
+    text-align: center;
+}
+
+/* Each individual step */
+.work-step-item {
+    flex: 1 1 240px;             /* Makes them grow equally with a min width */
+    max-width: 280px;            /* Prevents too much stretching */
+    display: flex;
+    flex-direction: column;
+    align-items: center;         /* Centers icon, title, text horizontally */
+    text-align: center;
+}
+
+/* Icon circle styling to match the green gradient */
+.work-step-icon {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    /* background: linear-gradient(to bottom, #bada55, #8fbc8f); */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;         /* Space between icon and title */
+    
+}
+
+.work-step-icon i {
+    font-size: 55px;
+    
+}
+
+
+.work-step-no {
+    position: absolute;
+    bottom: -12px;
+    right: -12px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.work-step-no h3 {
+    margin: 0;
+    font-size: 20px;
+    /* color: #8fbc8f; */
+    font-weight: bold;
+}
+
+/* Title styling */
+.work-step-titals {
+    /* margin: 0 0 15px 0;          */
+}
+
+.work-s-step2 .work-step-content
 {
-	margin-top: 20px;
+margin-top: 28px;
 }
 
+.work-s-step1 .work-step-content
+{
+margin-top: 28px;
+}
+.work-step-titals h3 {
+    /* margin: 0; */
+    font-size: 19px;
+    /* color: #8fbc8f; */
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+/* Description text */
+.work-step-content {
+    margin: 0;
+    font-size: 14.5px;
+    /* color: #555; */
+    line-height: 1.6;
+}
+
+/* Remove all unwanted <br> spacing */
+.work-step-item br,
+.work-step-content br {
+    display: none;
+}
+
+.work-step-content{
+
+font-size: 16px;
+    font-weight: 400;
+}
+
+/* 
+@media (max-width: 992px) {
+    .work-steps-box {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-steps-box {
+        flex-direction: column;
+        align-items: center;
+    }
+    .work-step-item {
+        max-width: 350px;
+    }
+} */
 

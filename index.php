@@ -15,7 +15,7 @@ $keySecret = 'vGUPpWNcWAJINBJcH9GFCb3R';
 $api = new Api($keyId, $keySecret);
 
 // DB connection
-$conn = new mysqli('localhost', 'u685993406_newaykadb', '8DwLlBGb!', 'u685993406_newaykadb');
+$conn = new mysqli('localhost', 'root', 'webmax!', 'u685993406_newaykadb-2');
 if ($conn->connect_error) {
     die("DB Connection Failed: " . $conn->connect_error);
 }
@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
             .then(res => res.text())
             .then(result => {
                 if (result.trim() === 'success') {
-                    window.location.href = 'index.php?status=success';
+                    window.location.href = 'index.php?status=success#how-we-work';
                 } else {
                     window.location.href = 'index.php?status=error';
                 }
@@ -668,6 +668,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                                 </li>
 
                                 <li class="nav-item"><a class="nav-link" href="./contact-us.php">Contact Us</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#how-we-work">How IT Work</a></li>
                                 <li class="nav-item highlighted-menu"><a class="nav-link"
                                         href="https://expert.aykacare.in/?fluent-form=4">book appointment</a></li>
                             </ul>
@@ -1392,7 +1393,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             }
         </style>
 
-        <div class="we-work bg-section">
+        <div id="how-we-work" class="we-work bg-section">
             <div class="container">
                 <div class="row section-row align-items-center">
                     <div class="col-lg-12">
@@ -1416,7 +1417,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         <!-- Work Steps Box Start -->
                         <div class="work-steps-box">
                             <!-- Work Step Item Start -->
-                            <div class="work-step-item">
+                            <div class="work-step-item work-s-step1">
                                 <br>
                                 <div class="work-step-icon">
                                     <i class="fas fa-user-plus"></i>
@@ -1424,66 +1425,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                                         <h3>01</h3>
                                     </div>
                                 </div>
+                                  
+                                <div class="work-step-titals"> <h3>Download the App</h3></div>
+
                                 <div class="work-step-content">
                                     <br>
-                                    <h3>UNLOCK Your Account</h3>
-                                    <p>Join the Health Revolution. Get instant access to the AYKA Care community and
-                                        your personalized dashboard. (Takes 60 Seconds!).</p>
+                                    <p>Download the AYKA Care app from the Play Store or App Store to get started.
+                                         Your health journey begins in just a few taps.</p>
                                 </div>
                             </div>
                             <!-- Work Step Item End -->
 
                             <!-- Work Step Item Start -->
-                            <div class="work-step-item">
+                            <div class="work-step-item work-s-step2">
                                 <div class="work-step-icon">
                                     <i class="fas fa-user-md"></i>
                                     <div class="work-step-no">
                                         <h3>02</h3>
                                     </div>
                                 </div>
+                                     <div class="work-step-titals"><h3>Sign Up or Login</h3></div>
+
                                 <div class="work-step-content">
                                     <br>
-                                    <h3>FIND Your Specialist MATCH</h3>
-                                    <p>Use our smart-search to connect with the perfect, vetted expert for your
-                                        needs—fast and frustration-free.</p>
+                                    <p>Register using your mobile number and create a secure password. Existing users can log in instantly. 
+                                        The process takes less than a minute.</p>
                                 </div>
                             </div>
                             <!-- Work Step Item End -->
 
                             <!-- Work Step Item Start -->
-                            <div class="work-step-item">
+                            <div class="work-step-item work-s-step3">
                                 <div class="work-step-icon">
                                     <i class="fas fa-calendar-check"></i>
                                     <div class="work-step-no">
                                         <h3>03</h3>
                                     </div>
                                 </div>
+
+                                <div class="work-step-titals"> <h3>Find the Right Doctor & Book Appointment</h3></div>
+
                                 <div class="work-step-content">
                                     <br>
-                                    <h3>BOOK Your Breakthrough</h3>
-                                    <p>Secure your appointment slot instantly at a time that works with your life. Zero
-                                        phone tag. Zero hassle.</p>
+                                    <p>Search doctors by specialty, symptoms, or location. Choose online or offline consultation and book your appointment at a time that suits you.
+                                         No waiting. No phone calls.</p>
                                 </div>
                             </div>
                             <!-- Work Step Item End -->
 
                             <!-- Work Step Item Start -->
-                            <div class="work-step-item">
+                            <div class="work-step-item work-s-step4">
                                 <div class="work-step-icon">
                                     <i class="fas fa-stethoscope"></i>
                                     <div class="work-step-no">
                                         <h3>04</h3>
                                     </div>
                                 </div>
+                                    <div class="work-step-titals"><h3>Consult & Manage Your Health</h3></div>
+
                                 <div class="work-step-content">
                                     <br>
-                                    <h3>LAUNCH Your Transformation</h3>
-                                    <p>Connect with your trusted doctor and START the journey to BETTER HEALTH OUTCOMES
-                                        TODAY.</p>
+                                    <p>Attend your appointment, chat with your doctor, access prescriptions, reports, and follow ups directly in the app.
+                                         Stay connected and take control of your health.</p>
                                 </div>
                             </div>
                             <!-- Work Step Item End -->
                         </div>
+                        
                         <!-- Work Steps Box End -->
                     </div>
                 </div>
