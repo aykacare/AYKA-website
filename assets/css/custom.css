@@ -5121,7 +5121,11 @@ header.main-header .header-sticky.active{
 
   #services{
     display: block !important;
-	margin-left: 80px !important;
+	/* margin-left: 80px !important; */
+	margin-left: 120px !important;
+
+
+	
   }
 }
 
@@ -5132,6 +5136,10 @@ header.main-header .header-sticky.active{
         position: relative;   /* ya absolute bhi use kar sakte ho */
  
     object-fit: cover;
+  }
+    #services{
+    display: block !important;
+	margin-left: 80px !important;
   }
 }
 
@@ -6880,13 +6888,55 @@ header.main-header .header-sticky.active{
 	
 }
 
+/* .slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center;
+  height: 190px; 
+  text-align: center;
+} */
+
+
+html {
+  scroll-behavior: smooth;
+}
+
 .slide {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* key line */
+  justify-content: space-between; /* Keeps button pushed to bottom */
   align-items: center;
-  height: 190px; /* adjust if needed */
+  height: 190px; /* Keep your fixed height or adjust if needed */
   text-align: center;
+  padding: 15px 10px; /* Optional: adds a bit of inner padding for better look */
+  box-sizing: border-box;
+}
+
+.slide img {
+  margin-bottom: 8px; /* Reduced space after image (was likely default ~10-20px + <br>) */
+  max-width: 80px; /* Adjust if your icons are larger/smaller */
+  height: auto;
+}
+
+.slide span {
+  margin-bottom: 15px; /* Space between text and button - adjust as needed */
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1.3;
+  flex-grow: 0; /* Prevents text from stretching */
+}
+
+/* Remove the <br> in HTML or override its effect */
+.slide br {
+  display: none; /* This eliminates the extra line break space completely */
+}
+
+.consult-btn {
+  margin-top: auto; /* Ensures button stays at bottom even if content is short */
+  font-size: 13px;
+  color: #8fbc8f; /* Matching your green theme */
+  text-decoration: none;
 }
 
 
